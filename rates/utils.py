@@ -14,8 +14,6 @@ def concrete(request):
         Avg('sand_price'))['sand_price__avg'])
     AggregatePrice = float(Inventory.objects.aggregate(Avg('aggregate_price'))[
         'aggregate_price__avg'])
-    print('cementprice:', CementPrice, ' sandprice:',
-          SandPrice, ' aggregateprice:', AggregatePrice)
 
     CementUnitsperTon = request.POST.get('CementUnitsperTon')
     if CementUnitsperTon is not None and CementUnitsperTon != '':
@@ -61,32 +59,31 @@ def concrete(request):
     }
 
     concreteclass = request.POST.get('class')
-    print(concreteclass)
+
     ratio = ratios.get(concreteclass)
-    print(ratio)
 
     if ratio is None:
         ratio = [1, 1, 1]
         # raise ValueError('Invalid concrete class')
     TotalRatio = sum(ratio)
-    print('sumratio:', TotalRatio)
+
     ComponentCement = 1.485 * CementUnitsperTon * CementPrice * ratio[0]
     ComponentSand = 1.605 * SandUnitsperTon * SandPrice * ratio[1]
     ComponentAggregate = 1.415 * \
         AggregateUnitsperTon * AggregatePrice * ratio[2]
 
     TotalCostof7cmofconcrete = ComponentCement + ComponentAggregate + ComponentSand
-    print(TotalCostof7cmofconcrete)
+
     CostperCm = TotalCostof7cmofconcrete/TotalRatio
-    print(CostperCm)
+
     addshrinkage = CostperCm + (0.45*CostperCm)
-    print(addshrinkage)
+
     addlabour = addshrinkage + (0.3*addshrinkage)
-    print(addlabour)
+
     addoverhead = addlabour + (num*addlabour)
-    print(addoverhead)
+
     addVAT = addoverhead + (0.16*addoverhead)
-    print(addVAT)
+
     ratepersm = 0.15*addVAT
 
     context = {'ratepersm': ratepersm}
