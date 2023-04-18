@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOWED_ORIGINS = [
-    "https://57c616b9.reacttodjango.pages.dev/",
+    "https://57c616b9.reacttodjango.pages.dev",
 ]
 
 # FORM SUBMISSION
