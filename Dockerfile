@@ -20,8 +20,6 @@ RUN curl -O https://dlcdn.apache.org/solr/solr/9.2.0/solr-9.2.0.tgz && \
     bash ./solr-9.2.0/bin/install_solr_service.sh solr-9.2.0.tgz
 
 
-# Copy the railway.json file into the container at /app/railway.json
-COPY railway.json /railway.json
 
 # Start Solr and run migrations, collectstatic, and gunicorn
 CMD service solr start && \
