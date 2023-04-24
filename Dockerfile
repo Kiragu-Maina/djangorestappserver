@@ -17,8 +17,7 @@ RUN apt-get update && apt-get install -y default-jdk
 # Download and install Solr
 RUN curl -O https://dlcdn.apache.org/solr/solr/9.2.0/solr-9.2.0.tgz && \
     tar xzf solr-9.2.0.tgz solr-9.2.0/bin/install_solr_service.sh && \
-    bash ./solr-9.2.0/bin/install_solr_service.sh solr-9.2.0.tgz && \
-    systemctl start solr
+    bash ./solr-9.2.0/bin/install_solr_service.sh solr-9.2.0.tgz
 
 
 # Copy the railway.json file into the container at /app/railway.json
