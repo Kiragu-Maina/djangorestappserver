@@ -25,7 +25,7 @@ COPY railway.json /railway.json
 
 # Start Solr and run migrations, collectstatic, and gunicorn
 CMD service solr start && \
-    python manage.py makemigrations
+    python manage.py makemigrations && \
     python manage.py migrate && \
     python manage.py collectstatic --noinput && \
     gunicorn mysite.wsgi
