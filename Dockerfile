@@ -15,9 +15,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN apt-get update && apt-get install -y default-jdk
 
 # Download and install Solr
-RUN cd /xisolr && \
-    ./install_solr_service.sh solr-9.2.0.tgz && \
+RUN curl -O https://dlcdn.apache.org/solr/solr/9.2.0/solr-9.2.0.tgz && \
+    tar xzf solr-9.2.0.tgz solr-9.2.0/bin/install_solr_service.sh && \
+    bash ./solr-9.2.0/bin/install_solr_service.sh solr-9.2.0.tgz && \
     systemctl start solr
+
 
 # Copy the railway.json file into the container at /app/railway.json
 COPY railway.json /railway.json
