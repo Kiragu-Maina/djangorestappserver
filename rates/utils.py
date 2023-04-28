@@ -131,7 +131,7 @@ def concret(selected_class, labour_costs, profit_overheads):
         # handle the case where the AggregateUnitsperTon value is missing or empty
         AggregateUnitsperTon = 0.0  # set a default value or raise an error
 
- 
+    
 
     # CementPrice = float(request.POST.get('CementPrice'))
     # SandPrice = float(request.POST.get('SandPrice'))
@@ -168,8 +168,10 @@ def concret(selected_class, labour_costs, profit_overheads):
     print(CostperCm)
     addshrinkage = CostperCm + (0.45*CostperCm)
     print(addshrinkage)
+   
     addlabour = addshrinkage + (0.01*labour_costs*addshrinkage)
     print(addlabour)
+
     addoverhead = addlabour + (0.01*profit_overheads*addlabour)
     print(addoverhead)
     addVAT = addoverhead + (0.16*addoverhead)
