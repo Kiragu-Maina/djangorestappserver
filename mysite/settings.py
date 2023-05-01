@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 from oscar.defaults import *
-# 
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'rates',
     'apis',
     'rest_framework',
-    "corsheaders", 
+    "corsheaders",
 
     'django.contrib.sites',
     'django.contrib.flatpages',
@@ -91,9 +91,11 @@ INSTALLED_APPS = [
     'treebeard',
     'sorl.thumbnail',   # Default thumbnail backend, can be replaced
     'django_tables2',
+    "oscar_elasticsearch.search.apps.OscarElasticSearchConfig",
+
 ]
 
-SITE_ID = 1 
+SITE_ID = 1
 
 
 MIDDLEWARE = [
@@ -134,7 +136,7 @@ LOGGING = {
     'handlers': {
         'console': {
             'level': 'INFO',
-            #'filters': ['require_debug_true'],
+            # 'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
         },
         'django.server': {
@@ -144,7 +146,7 @@ LOGGING = {
         },
         'mail_admins': {
             'level': 'ERROR',
-            #'filters': ['require_debug_false'],
+            # 'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         }
     },
@@ -190,13 +192,79 @@ REST_FRAMEWORK = {
     ],
 }
 
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-        'URL': 'http://0.0.0.0:8983/solr',
-        'INCLUDE_SPELLING': True,
+
+OSCAR_PRODUCT_SEARCH_HANDLER = "oscar_elasticsearch.search.search_handlers.ProductSearchHandler"
+OSCAR_ELASTICSEARCH_FACETS = [
+    {
+        "name": "price",
+        "label": "Price",
+        "type": "range",
+        "formatter": "oscar_elasticsearch.search.format.currency",
+        "ranges": [
+            25,
+            100,
+            500,
+            1000
+        ]
     },
+    {
+        "name": "attrs.gewicht",
+        "label": "Gewicht",
+        "type": "term",
+        "ranges": []
+    },
+    {
+        "name": "attrs.googleshopping",
+        "label": "Google product",
+        "type": "term",
+        "ranges": []
+    },
+    {
+        "name": "attrs.size",
+        "label": "Maat",
+        "type": "term",
+        "ranges": []
+    },
+    {
+        "name": "attrs.height",
+        "label": "Hoogte",
+        "type": "term",
+        "ranges": []
+    },
+    {
+        "name": "attrs.zult",
+        "label": "Datum",
+        "type": "term",
+        "ranges": []
+    },
+    {
+        "name": "attrs.stroomverbruik",
+        "label": "Stroomverbruik",
+        "type": "term",
+        "ranges": []
+    },
+    {
+        "name": "attrs.bijzonderheden",
+        "label": "Bijzonderheden",
+        "type": "term",
+        "ranges": []
+    }
+]
+
+WAGTAILSEARCH_BACKENDS = {
+    "default": {
+        "BACKEND": "oscar_elasticsearch.search.backend",
+        "URLS": ["http://127.0.0.1:9200"],
+        "INDEX": "my-index-name",
+        "TIMEOUT": 120,
+        "OPTIONS": {},
+        "INDEX_SETTINGS": {},
+        "ATOMIC_REBUILD": True,
+        "AUTO_UPDATE": True,
+    }
 }
+
+HAYSTACK_CONNECTIONS = {"default": {}}
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 

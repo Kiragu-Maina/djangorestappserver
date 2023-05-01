@@ -10,7 +10,9 @@
         "mv solr-9.2.0 server",
         "mkdir -p /opt/solr/data",
         "mkdir -p /var/solr/logs",
-        "server/bin/solr start -force"
+        "server/bin/solr start -force",
+        "server/bin/solr status",
+        "server/bin/solr create -c sandbox -n basic_config"
       ]
     },
     "setup": {
@@ -36,7 +38,10 @@
         "pip3 install -r requirements.txt",
         "python manage.py makemigrations",
         "python manage.py migrate",
-        "python manage.py initadmin"
+        "python manage.py initadmin",
+        "python manage.py build_solr_schema --configure-directory=/opt/solr/server/solr/sandbox/conf",
+        "python manage.py build_solr_schema --reload-core sandbox",
+        "python manage.py rebuild_index --noinput"
       ]
     }
   },
