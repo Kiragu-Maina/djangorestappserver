@@ -1,20 +1,6 @@
 {
   "phases": {
-    "solr": {
-      "cmds": [
-        "mkdir -p /opt/solr",
-        "cd /opt/solr",
-        "curl -O https://dlcdn.apache.org/solr/solr/9.2.0/solr-9.2.0.tgz",
-        "tar xzf solr-9.2.0.tgz",
-        "rm solr-9.2.0.tgz",
-        "mv solr-9.2.0 server",
-        "mkdir -p /opt/solr/data",
-        "mkdir -p /var/solr/logs",
-        "server/bin/solr start -force",
-        "server/bin/solr status",
-        "server/bin/solr create -c sandbox -n basic_config"
-      ]
-    },
+    
     "setup": {
       "cmds": [
         "apt install software-properties-common -y",
@@ -27,7 +13,8 @@
         "gcc",
         "curl",
         "default-jdk",
-        "lsof"
+        "lsof",
+        "wget"
       ]
     },
     "install": {
@@ -37,11 +24,8 @@
         "apt-get install python3-pip -y",
         "pip3 install -r requirements.txt",
         "python manage.py makemigrations",
-        "python manage.py migrate",
-        "python manage.py initadmin",
-        "python manage.py build_solr_schema --configure-directory=/opt/solr/server/solr/sandbox/conf",
-        "python manage.py build_solr_schema --reload-core sandbox",
-        "python manage.py rebuild_index --noinput"
+        "python manage.py migrate"
+                
       ]
     }
   },

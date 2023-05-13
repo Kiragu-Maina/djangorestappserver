@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 from oscar.defaults import *
+location = lambda x: os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), x)
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -91,7 +93,7 @@ INSTALLED_APPS = [
     'treebeard',
     'sorl.thumbnail',   # Default thumbnail backend, can be replaced
     'django_tables2',
-    "oscar_elasticsearch.search.apps.OscarElasticSearchConfig",
+    
 
 ]
 
@@ -193,78 +195,11 @@ REST_FRAMEWORK = {
 }
 
 
-OSCAR_PRODUCT_SEARCH_HANDLER = "oscar_elasticsearch.search.search_handlers.ProductSearchHandler"
-OSCAR_ELASTICSEARCH_FACETS = [
-    {
-        "name": "price",
-        "label": "Price",
-        "type": "range",
-        "formatter": "oscar_elasticsearch.search.format.currency",
-        "ranges": [
-            25,
-            100,
-            500,
-            1000
-        ]
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
     },
-    {
-        "name": "attrs.gewicht",
-        "label": "Gewicht",
-        "type": "term",
-        "ranges": []
-    },
-    {
-        "name": "attrs.googleshopping",
-        "label": "Google product",
-        "type": "term",
-        "ranges": []
-    },
-    {
-        "name": "attrs.size",
-        "label": "Maat",
-        "type": "term",
-        "ranges": []
-    },
-    {
-        "name": "attrs.height",
-        "label": "Hoogte",
-        "type": "term",
-        "ranges": []
-    },
-    {
-        "name": "attrs.zult",
-        "label": "Datum",
-        "type": "term",
-        "ranges": []
-    },
-    {
-        "name": "attrs.stroomverbruik",
-        "label": "Stroomverbruik",
-        "type": "term",
-        "ranges": []
-    },
-    {
-        "name": "attrs.bijzonderheden",
-        "label": "Bijzonderheden",
-        "type": "term",
-        "ranges": []
-    }
-]
-
-WAGTAILSEARCH_BACKENDS = {
-    "default": {
-        "BACKEND": "oscar_elasticsearch.search.backend",
-        "URLS": ["http://127.0.0.1:9200"],
-        "INDEX": "my-index-name",
-        "TIMEOUT": 120,
-        "OPTIONS": {},
-        "INDEX_SETTINGS": {},
-        "ATOMIC_REBUILD": True,
-        "AUTO_UPDATE": True,
-    }
 }
-
-HAYSTACK_CONNECTIONS = {"default": {}}
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
@@ -324,10 +259,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = 'media/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Absolute path to the directory that holds media.
+# Example: "/home/media/media.lawrence.com/"
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
+

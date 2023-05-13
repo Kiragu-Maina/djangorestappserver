@@ -87,16 +87,36 @@ def concrete(request):
     print(addoverhead)
     addVAT = addoverhead + (0.16*addoverhead)
     print(addVAT)
-    ratepersm = 0.15*addVAT
+    ratepersm = addVAT
 
     context = {'ratepersm': ratepersm}
     return context
+
 
 def utility(component, selected_class, labour_costs, profit_overheads):
     print('utility called')
     if component == 'Concrete':
         print('component is concrete')
         return concret(selected_class, labour_costs, profit_overheads)
+    elif component == 'Steel':
+        return steel(labour_costs, profit_overheads)
+
+
+def steel(labour_costs, profit_overheads):
+    priceofreinforcement = 103
+    priceoftiewireper25kg = 4500
+
+    mmdiameterbars = 1000 * priceofreinforcement
+    Wasteandlaps = 0.05 * mmdiameterbars
+    Unloadandstack = 75 + mmdiameterbars + Wasteandlaps
+    Tiewire = Unloadandstack + (priceoftiewireper25kg/25 * 7)
+    Spacers = Tiewire + 2000
+    labour = Spacers + ((labour_costs/8 * 28) + (labour_costs/8 * 30))
+    profits = labour + (profit_overheads/100 * labour)
+    vat = profits + (0.16*profits)
+    ratepersm = (vat/1000)
+    context = {'ratepersm': ratepersm}
+    return context
 
 
 def concret(selected_class, labour_costs, profit_overheads):
@@ -130,8 +150,6 @@ def concret(selected_class, labour_costs, profit_overheads):
     else:
         # handle the case where the AggregateUnitsperTon value is missing or empty
         AggregateUnitsperTon = 0.0  # set a default value or raise an error
-
-    
 
     # CementPrice = float(request.POST.get('CementPrice'))
     # SandPrice = float(request.POST.get('SandPrice'))
@@ -168,7 +186,7 @@ def concret(selected_class, labour_costs, profit_overheads):
     print(CostperCm)
     addshrinkage = CostperCm + (0.45*CostperCm)
     print(addshrinkage)
-   
+
     addlabour = addshrinkage + (0.01*labour_costs*addshrinkage)
     print(addlabour)
 
@@ -176,8 +194,7 @@ def concret(selected_class, labour_costs, profit_overheads):
     print(addoverhead)
     addVAT = addoverhead + (0.16*addoverhead)
     print(addVAT)
-    ratepersm = 0.15*addVAT
+    ratepersm = addVAT
 
     context = {'ratepersm': ratepersm}
     return context
-
