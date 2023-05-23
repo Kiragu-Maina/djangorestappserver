@@ -13,6 +13,7 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from .serializers import UserSerializer
+from .models import AbstractProducts
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -91,3 +92,35 @@ class RatesView(APIView):
 	    rate = utility(component=component, selected_class=selected_class, labour_costs=labour_costs, profit_overheads=profit_overheads)
 	    print(rate)
 	    return JsonResponse(rate)
+
+class ProductsUpload(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.POST.get('data'))
+
+        # Extract the relevant data from the request
+        item_name = data.get('itemName')
+        description = data.get('description')
+        price = data.get('price')
+        quantity = data.get('quantity')
+
+        # Get the uploaded image file
+        image_file = request.FILES.get('image')
+
+        # Create a new instance of AbstractProducts and save the data
+        product = AbstractProducts(
+            itemName=item_name,
+            description=description,
+            price=price,
+            quantity=quantity,
+            image=image_file
+        )
+        product.save()
+
+        return JsonResponse({'message': 'Product created successfully.'}, status=201)

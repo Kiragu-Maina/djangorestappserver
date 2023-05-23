@@ -32,7 +32,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOWED_ORIGINS = [
-    "https://reacttodjango.pages.dev",
+    "https://pososta.vercel.app",
 ]
 
 # FORM SUBMISSION
@@ -217,6 +217,14 @@ DATABASES = {
         'PORT': os.environ["PGPORT"],
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
 
 AUTHENTICATION_BACKENDS = (
     'oscar.apps.customer.auth_backends.EmailBackend',
