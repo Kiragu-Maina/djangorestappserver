@@ -13,7 +13,7 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from .serializers import UserSerializer
-from .models import AbstractProducts
+from customserver.catalogue.models import Product as AbstractProducts
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -102,25 +102,26 @@ class ProductsUpload(APIView):
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.POST.get('data'))
+        products = request.FILES.getlist('products')
+        for product_data in products:
 
-        # Extract the relevant data from the request
-        item_name = data.get('itemName')
-        description = data.get('description')
-        price = data.get('price')
-        quantity = data.get('quantity')
+            # Extract the relevant data from the request
+            item_name = product_data.getlist('title')[0]
+            description = product_data.getlist('description')[0]
+            price = product_data.getlist('price')[0]
+            quantity = product_data.getlist('quantity')[0]
 
-        # Get the uploaded image file
-        image_file = request.FILES.get('image')
+            # Get the uploaded image file
+            image_file = product_data.get('image')
 
-        # Create a new instance of AbstractProducts and save the data
-        product = AbstractProducts(
-            itemName=item_name,
-            description=description,
-            price=price,
-            quantity=quantity,
-            image=image_file
-        )
-        product.save()
+            # Create a new instance of AbstractProducts and save the data
+            product = AbstractProducts(
+                itemName=item_name,
+                descriptionfield=description,
+                pricefield=price,
+                quantityfield=quantity,
+                imagefield=image_file
+            )
+            product.save()
 
         return JsonResponse({'message': 'Product created successfully.'}, status=201)

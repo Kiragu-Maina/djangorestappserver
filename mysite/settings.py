@@ -33,6 +33,8 @@ DEBUG = False
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOWED_ORIGINS = [
     "https://pososta.vercel.app",
+    "https://pososta-git-master-jumakenn.vercel.app",
+    "https://pososta-ee9grnbpv-jumakenn.vercel.app",
 ]
 
 # FORM SUBMISSION
@@ -40,6 +42,7 @@ CORS_ALLOWED_ORIGINS = [
 # CSRF_TRUSTED_ORIGINS = ["*"]
 
 # Application definition
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -52,6 +55,7 @@ INSTALLED_APPS = [
     'apis',
     'rest_framework',
     "corsheaders",
+    # 'catalogue',
 
     'django.contrib.sites',
     'django.contrib.flatpages',
@@ -61,7 +65,7 @@ INSTALLED_APPS = [
     'oscar.apps.checkout.apps.CheckoutConfig',
     'oscar.apps.address.apps.AddressConfig',
     'oscar.apps.shipping.apps.ShippingConfig',
-    'oscar.apps.catalogue.apps.CatalogueConfig',
+    'customserver.catalogue.apps.CatalogueConfig',
     'oscar.apps.catalogue.reviews.apps.CatalogueReviewsConfig',
     'oscar.apps.communication.apps.CommunicationConfig',
     'oscar.apps.partner.apps.PartnerConfig',
@@ -202,7 +206,7 @@ HAYSTACK_CONNECTIONS = {
 }
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
-
+OSCAR_CORE_PRODUCT_MODEL = 'customserver.catalogue.Productt'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
