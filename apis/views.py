@@ -12,8 +12,17 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from .serializers import UserSerializer
-from customserver.catalogue.models import Product as AbstractProducts
+from .serializers import UserSerializer, ProductsSerializer, ProductSerializer
+from .models import Products, Product
+
+
+class ProductListView(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -74,24 +83,24 @@ class ComponentsView(APIView):
 
 
 class RatesView(APIView):
-	authentication_classes = []
-	permission_classes = []
+    authentication_classes = []
+    permission_classes = []
 
-	@csrf_exempt
-	def dispatch(self, request, *args, **kwargs):
-	    return super().dispatch(request, *args, **kwargs)
-	def post(self, request, *args, **kwargs):
-	    data = json.loads(request.body)
-	    component = data['component']
-	    selected_class = data['class']
-	    labour_costs = data['labourCosts']
-	    profit_overheads = data['profitOverheads']
-	    print('component:', component, 'selected_class:', selected_class, 'labour_costs:', labour_costs, 'profit_overheads: ',profit_overheads)
-	    
-	    # Process the data and calculate the rate
-	    rate = utility(component=component, selected_class=selected_class, labour_costs=labour_costs, profit_overheads=profit_overheads)
-	    print(rate)
-	    return JsonResponse(rate)
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        component = data['component']
+        selected_class = data['class']
+        labour_costs = data['labourCosts']
+        profit_overheads = data['profitOverheads']
+        print('component:', component, 'selected_class:', selected_class, 'labour_costs:', labour_costs, 'profit_overheads: ',profit_overheads)
+        
+        # Process the data and calculate the rate
+        rate = utility(component=component, selected_class=selected_class, labour_costs=labour_costs, profit_overheads=profit_overheads)
+        print(rate)
+        return JsonResponse(rate)
 
 class ProductsUpload(APIView):
     authentication_classes = []
@@ -102,26 +111,39 @@ class ProductsUpload(APIView):
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        products = request.FILES.getlist('products')
-        for product_data in products:
+        data = json.loads(request.POST.get('data'))
 
-            # Extract the relevant data from the request
-            item_name = product_data.getlist('title')[0]
-            description = product_data.getlist('description')[0]
-            price = product_data.getlist('price')[0]
-            quantity = product_data.getlist('quantity')[0]
+        # Extract the relevant data from the request
+        item_name = data.get('itemName')
+        description = data.get('description')
+        price = data.get('price')
+        quantity = data.get('quantity')
 
-            # Get the uploaded image file
-            image_file = product_data.get('image')
+        # Get the uploaded image file
+        image_file = request.FILES.get('image')
 
-            # Create a new instance of AbstractProducts and save the data
-            product = AbstractProducts(
-                itemName=item_name,
-                descriptionfield=description,
-                pricefield=price,
-                quantityfield=quantity,
-                imagefield=image_file
-            )
-            product.save()
+        # Create a new instance of AbstractProducts and save the data
+        product = Products(
+            itemName=item_name,
+            description=description,
+            price=price,
+            quantity=quantity,
+            image=image_file
+        )
+        product.save()
 
         return JsonResponse({'message': 'Product created successfully.'}, status=201)
+
+class ProductsView(APIView):
+    authentication_classes = []
+    permission_classes = []
+    
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        items = Products.objects.all()
+        serializer = ProductsSerializer(items, many=True)  # Serialize the queryset
+        
+        return Response(serializer.data)

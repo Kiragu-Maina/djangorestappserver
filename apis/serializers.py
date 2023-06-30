@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from .models import Products, Product
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,3 +15,13 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
+
+class ProductsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Products
+        fields = ['id', 'itemName', 'description', 'price', 'quantity', 'image']
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('image', 'title', 'subtitle', 'description', 'location', 'category', 'price')

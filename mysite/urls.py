@@ -21,5 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('rates.urls')),
     path('apis/', include('apis.urls')),
-    path('commerce/', include(apps.get_app_config('oscar').urls[0])),
+   
 ]
