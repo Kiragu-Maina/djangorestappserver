@@ -11,3 +11,6 @@ pysolr==3.9.0
 sorl-thumbnail==12.9.0
 pillow==9.5.0
 pycountry==22.3.5 
+cloudinary==1.30.0
+django-cloudinary-storage==0.3.0
+requests==2.25.1
