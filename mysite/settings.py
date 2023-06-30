@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 import cloudinary
 from pathlib import Path
-from oscar.defaults import *
+
 location = lambda x: os.path.join(
     os.path.dirname(os.path.realpath(__file__)), x)
 
@@ -36,7 +36,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://pososta.vercel.app",
     "https://pososta-git-master-jumakenn.vercel.app",
     "https://pososta-ee9grnbpv-jumakenn.vercel.app",
-"https://www.pososta.com",
+    "https://www.pososta.com",
 
 
 ]
@@ -137,7 +137,7 @@ REST_FRAMEWORK = {
 
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
-OSCAR_CORE_PRODUCT_MODEL = 'customserver.catalogue.Productt'
+
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
