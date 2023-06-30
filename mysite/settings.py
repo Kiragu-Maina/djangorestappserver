@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-rc^*w^w&6g9_(uvx#6s*bnt!w)l0rdi%!l7mv#y%uc&x%wo5pk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOWED_ORIGINS = [
@@ -62,14 +62,10 @@ INSTALLED_APPS = [
     'rest_framework',
     "corsheaders",
      "cloudinary_storage",
-    "cloudinary",
-    # 'catalogue',
-
-    
+    "cloudinary", 
 
     
     
-
 ]
 
 SITE_ID = 1
@@ -78,14 +74,14 @@ cloudinary.config(
     cloud_name="dzac7jcg9",
     api_key="298999595751521",
     api_secret="WKPLJLG6puJyJyocjXq-_aJqprg",
-    # api_proxy="http://proxy.server:3128",
+    api_proxy="http://proxy.server:3128",
 )
 
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": "dzac7jcg9",
     "API_KEY": "298999595751521",
     "API_SECRET": "WKPLJLG6puJyJyocjXq-_aJqprg",
-#     "api_proxy": "http://proxy.server:3128",
+    "api_proxy": "http://proxy.server:3128",
 }
 
 
@@ -193,21 +189,22 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
-MEDIA_URL = '/media/'
+MEDIA_URL = 'media/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 

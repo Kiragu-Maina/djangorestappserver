@@ -32,7 +32,5 @@
       ]
     }
   },
-  "nixOverlays": [
-    "https://dlcdn.apache.org/solr/solr/9.2.0/solr-9.2.0.tgz"
-  ]
+  
 }
