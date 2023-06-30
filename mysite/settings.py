@@ -65,8 +65,7 @@ INSTALLED_APPS = [
     "cloudinary",
     # 'catalogue',
 
-    'django.contrib.sites',
-    'django.contrib.flatpages',
+    
 
     
     
@@ -162,10 +161,7 @@ DATABASES = {
 # }
 
 
-AUTHENTICATION_BACKENDS = (
-    'oscar.apps.customer.auth_backends.EmailBackend',
-    'django.contrib.auth.backends.ModelBackend',
-)
+
 
 
 # Password validation
