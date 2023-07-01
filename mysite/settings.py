@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "whitenoise.runserver_nostatic",
     'rates',
     'apis',
     'rest_framework',
@@ -96,7 +97,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'mysite.urls'
