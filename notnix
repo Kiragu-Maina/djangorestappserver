@@ -10,11 +10,7 @@
       ],
       "aptPkgs": [
         "postgresql",
-        "gcc",
-        "curl",
-        "default-jdk",
-        "lsof",
-        "wget"
+        "gcc"        
       ]
     },
     "install": {
