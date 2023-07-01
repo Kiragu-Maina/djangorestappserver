@@ -76,14 +76,14 @@ cloudinary.config(
     cloud_name="dzac7jcg9",
     api_key="298999595751521",
     api_secret="WKPLJLG6puJyJyocjXq-_aJqprg",
-    api_proxy="http://proxy.server:3128",
+    
 )
 
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": "dzac7jcg9",
     "API_KEY": "298999595751521",
     "API_SECRET": "WKPLJLG6puJyJyocjXq-_aJqprg",
-    "api_proxy": "http://proxy.server:3128",
+    
 }
 
 
