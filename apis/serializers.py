@@ -22,6 +22,12 @@ class ProductsSerializer(serializers.ModelSerializer):
         fields = ['id', 'itemName', 'description', 'price', 'quantity', 'image']
 
 class ProductSerializer(serializers.ModelSerializer):
+    shop_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
-        fields = ('image', 'title', 'subtitle', 'description', 'location', 'category', 'price')
+        fields = ('image', 'title', 'subtitle', 'description', 'location', 'category', 'shop_name', 'price')
+    def get_shop_name(self, obj):
+        if obj.shop:
+            return obj.shop.shopname
+        return None

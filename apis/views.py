@@ -13,7 +13,7 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from .serializers import UserSerializer, ProductsSerializer, ProductSerializer
-from .models import Products, Product
+from .models import Products, Product, Shop
 
 
 class ProductListView(APIView):
@@ -147,3 +147,62 @@ class ProductsView(APIView):
         serializer = ProductsSerializer(items, many=True)  # Serialize the queryset
         
         return Response(serializer.data)
+
+class CheckShop(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def get(self, request, *args, **kwargs):
+        username = kwargs['username']  # Assuming 'username' is part of the URL path parameter
+        # Handle the 'GET' request logic here
+        # Example: Retrieve data or perform any necessary operations
+        # You can use the 'username' to fetch the corresponding data from the database
+        # Replace 'Shop.objects.get()' with the appropriate query to retrieve the shop_owner based on 'username'
+        try:
+            shop_owner = Shop.objects.get(shop_owner=username)
+            return JsonResponse({'shop_owner': shop_owner.shop_owner}, status=200)
+        except Shop.DoesNotExist:
+            return JsonResponse({'shop_owner': ''}, status=200)
+
+      
+
+
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+       
+        return super().dispatch(request, *args, **kwargs)
+
+    
+
+class CreateShop(APIView):
+    authentication_classes = []
+    permission_classes = []
+    
+
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+       
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        print(json.loads(request.POST.get('shop')))
+        
+        
+        
+        shop_owner = json.loads(request.POST.get('shop_owner'))
+        shopname = json.loads(request.POST.get('shopname'))
+        location = json.loads(request.POST.get('location'))
+        phone_no = json.loads(request.POST.get('phone_no'))
+        email = json.loads(request.POST.get('email'))
+        print(shop_owner, shopname, location, phone_no, email)
+        shop = Shop(
+            shop_owner = shop_owner,
+            shopname = shopname,
+            location = location,
+            phone_no = phone_no,
+            email = email
+        )
+        shop.save()
+
+        
+
+        return JsonResponse({'message': 'Shop created successfully.'}, status=201)

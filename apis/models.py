@@ -6,6 +6,8 @@ from io import BytesIO
 from django.core.files import File
 
 
+
+
 class Products(models.Model):
     itemName = models.CharField(max_length=255)
     description = models.TextField()
@@ -27,9 +29,13 @@ def upload_location(instance, filename):
 
     return "{}/{}.{}".format(shop, filename, ext)
 
+
 class Shop(models.Model):
+    shop_owner = models.CharField(max_length=255, default='null')
     shopname = models.CharField(max_length=255, default='null')
     location = models.CharField(max_length=255, default='null')
+    phone_no = models.CharField(max_length=255, default='null')
+    email = models.CharField(max_length=255, default='null')
 
     def __str__(self):
         return f'Shop {self.id}: {self.shopname}: {self.location}'
@@ -42,6 +48,7 @@ class Product(models.Model):
     subtitle = models.CharField(max_length=100)
     description = models.TextField()
     location = models.CharField(max_length=100, default='null')
+    
     price=models.DecimalField(max_digits=20, decimal_places=2, null=True)
     
     category = models.CharField(max_length=100)
