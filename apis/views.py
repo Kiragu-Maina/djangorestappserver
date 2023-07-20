@@ -3,7 +3,7 @@ from django.db.models import Avg
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rates.models import Shop, Inventory
+
 from rates.utils import utility
 import json
 from rest_framework.views import APIView
@@ -12,7 +12,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from .serializers import UserSerializer, ProductsSerializer, ProductSerializer
+from .serializers import UserSerializer, ProductsSerializer, ProductSerializer, ShopSerializer
 from .models import Products, Product, Shop
 
 
@@ -47,6 +47,7 @@ class LoginView(APIView):
 
         if user is not None:
             login(request, user)
+            request.session['logged_in_user'] = username
             return Response({'message': 'Logged in successfully.'})
         return Response({'message': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -111,28 +112,27 @@ class ProductsUpload(APIView):
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.POST.get('data'))
 
-        # Extract the relevant data from the request
-        item_name = data.get('itemName')
-        description = data.get('description')
-        price = data.get('price')
-        quantity = data.get('quantity')
+        data_list = request.data  # Assuming request.data is a list of dictionaries
+        username = self.kwargs.get('username', None)
 
-        # Get the uploaded image file
-        image_file = request.FILES.get('image')
+        # shop_name = request.session.get('shop_name')
+        shop_name = Shop.objects.filter(shop_owner=username).values_list('shopname', flat=True).first()
 
-        # Create a new instance of AbstractProducts and save the data
-        product = Products(
-            itemName=item_name,
-            description=description,
-            price=price,
-            quantity=quantity,
-            image=image_file
-        )
-        product.save()
+        for data in data_list:
+            data['shop_name'] = shop_name
+            print(data)
+            serializer = ProductSerializer(data=data)
+            print(serializer)
+            if serializer.is_valid():
+                shop = serializer.save()  # Create and save the product object
+                # Additional logic or response handling for each product
+            else:
+                errors = serializer.errors
+                # Handle validation errors for each product
+                print(errors)
 
-        return JsonResponse({'message': 'Product created successfully.'}, status=201)
+        return JsonResponse({'message': 'Products created successfully.'}, status=201)
 
 class ProductsView(APIView):
     authentication_classes = []
@@ -142,11 +142,53 @@ class ProductsView(APIView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
     
+    def get_queryset(self, request):
+        print(request)
+        username = self.kwargs.get('username', None)
+
+        # shop_name = request.session.get('shop_name')
+        shop_name = Shop.objects.filter(shop_owner=username).values_list('shopname', flat=True).first()
+        request.session['shop_name'] = shop_name
+        print('shopname in productsview is: ', shop_name)
+
+        if shop_name is not None:
+            # Do something with the shop_name
+            print(f"The shop name in session is: {shop_name}")
+            queryset = Product.objects.filter(shop__shopname=shop_name)
+            print(queryset)
+        else:
+            # Handle the case when the shop_name is not found in the session
+            queryset = Product.objects.all()
+
+        # if username:
+        #     # Get the shop names for the shop owner
+        #     shop_names = Shop.objects.filter(shop_owner=username).values_list('shopname', flat=True)
+        #     print(shop_names)
+        #     # Filter the products where the shop's shopname is in the shop_names list
+        #     queryset = Product.objects.filter(shop__shopname__in=shop_names)
+        #     print(queryset)
+        # else:
+        #     queryset = Product.objects.all()
+        return queryset
+
     def get(self, request, *args, **kwargs):
-        items = Products.objects.all()
-        serializer = ProductsSerializer(items, many=True)  # Serialize the queryset
-        
+        queryset = self.get_queryset(request)
+        serializer = ProductSerializer(queryset, many=True)
         return Response(serializer.data)
+
+class CreateShop(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        serializer = ShopSerializer(data=request.data)
+        print(serializer)
+        if serializer.is_valid():
+            shop = serializer.save()  # Create and save the shop object
+            # Additional logic or response handling
+            return JsonResponse(serializer.data, status=200)
+        else:
+            errors = serializer.errors
+            return JsonResponse(errors, status=400)
+        
 
 class CheckShop(APIView):
     authentication_classes = []
@@ -158,10 +200,28 @@ class CheckShop(APIView):
         # You can use the 'username' to fetch the corresponding data from the database
         # Replace 'Shop.objects.get()' with the appropriate query to retrieve the shop_owner based on 'username'
         try:
-            shop_owner = Shop.objects.get(shop_owner=username)
-            return JsonResponse({'shop_owner': shop_owner.shop_owner}, status=200)
-        except Shop.DoesNotExist:
-            return JsonResponse({'shop_owner': ''}, status=200)
+            exists = Shop.objects.filter(shop_owner=username).exists()
+
+            if exists:
+                print('exists')
+                try:
+                    shop_name = Shop.objects.filter(shop_owner=username).values_list('shopname', flat=True).first()
+
+                    if shop_name is not None:
+                        # Do something with the shop_name
+                        print(f"The shop name in session is: {shop_name}")
+                        request.session['shop_name'] = shop_name
+                        request.session.save()
+                    else:
+                        
+                        # Handle the case when the shop_name is not found in the session
+                        print("Shop name not found for the given username.")
+                except Exception as e:
+                    print(f"Error occurred during database query: {e}")
+                
+            return JsonResponse({'exists': exists}, status=200)
+        except:
+            return JsonResponse({'exists': False}, status=400)  
 
       
 
@@ -170,39 +230,5 @@ class CheckShop(APIView):
     def dispatch(self, request, *args, **kwargs):
        
         return super().dispatch(request, *args, **kwargs)
-
     
 
-class CreateShop(APIView):
-    authentication_classes = []
-    permission_classes = []
-    
-
-    @csrf_exempt
-    def dispatch(self, request, *args, **kwargs):
-       
-        return super().dispatch(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        print(json.loads(request.POST.get('shop')))
-        
-        
-        
-        shop_owner = json.loads(request.POST.get('shop_owner'))
-        shopname = json.loads(request.POST.get('shopname'))
-        location = json.loads(request.POST.get('location'))
-        phone_no = json.loads(request.POST.get('phone_no'))
-        email = json.loads(request.POST.get('email'))
-        print(shop_owner, shopname, location, phone_no, email)
-        shop = Shop(
-            shop_owner = shop_owner,
-            shopname = shopname,
-            location = location,
-            phone_no = phone_no,
-            email = email
-        )
-        shop.save()
-
-        
-
-        return JsonResponse({'message': 'Shop created successfully.'}, status=201)

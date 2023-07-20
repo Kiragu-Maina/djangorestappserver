@@ -24,8 +24,8 @@ urlpatterns = [
     path('rates/', RatesView.as_view(), name='rates'),
     path('register/', RegisterView.as_view(), name='api-register'),
     path('login/', LoginView.as_view(), name='api-login'),
-    path('products/', ProductsUpload.as_view(), name='uploadproducts'),
-    path('ecommerce/', ProductListView.as_view(), name='ecommerce'),
+    path('products/<str:username>/', ProductsUpload.as_view(), name='uploadproducts'),
+    path('ecommerce/<str:username>/', ProductsView.as_view(), name='ecommerce'),
     path('checkshop/<str:username>/', CheckShop.as_view(), name='checkshop'),
     path('createshop/', CreateShop.as_view(), name='createshop')
 ]

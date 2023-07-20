@@ -38,7 +38,7 @@ class Shop(models.Model):
     email = models.CharField(max_length=255, default='null')
 
     def __str__(self):
-        return f'Shop {self.id}: {self.shopname}: {self.location}'
+        return f'Shop {self.id}: {self.shopname}: {self.location} : {self.shop_owner} : {self.email}'
 
 
 class Product(models.Model):
@@ -48,6 +48,7 @@ class Product(models.Model):
     subtitle = models.CharField(max_length=100)
     description = models.TextField()
     location = models.CharField(max_length=100, default='null')
+    quantity = models.CharField(max_length=100, default=1)
     
     price=models.DecimalField(max_digits=20, decimal_places=2, null=True)
     

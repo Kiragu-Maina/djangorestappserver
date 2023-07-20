@@ -12,7 +12,11 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 import cloudinary
+import redis
+import hiredis
+
 from pathlib import Path
+
 
 location = lambda x: os.path.join(
     os.path.dirname(os.path.realpath(__file__)), x)
@@ -32,6 +36,7 @@ SECRET_KEY = 'django-insecure-rc^*w^w&6g9_(uvx#6s*bnt!w)l0rdi%!l7mv#y%uc&x%wo5pk
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+
 CORS_ALLOWED_ORIGINS = [
     "https://pososta.vercel.app",
     "https://pososta-git-master-jumakenn.vercel.app",
@@ -102,8 +107,21 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'mysite.urls'
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}",
+        "OPTIONS": {
+            "PASSWORD": REDIS_PASSWORD,
+            "USERNAME": REDIS_USER,
+            
+        },
+    }
+}
 
-
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = "default"
+SESSION_COOKIE_HTTPONLY = True
 
 TEMPLATES = [
     {

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Products, Product
+from .models import Products, Product, Shop
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,8 +26,23 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('image', 'title', 'subtitle', 'description', 'location', 'category', 'shop_name', 'price')
+        fields = ('image', 'title', 'subtitle', 'description','quantity', 'location', 'category', 'shop_name', 'price')
     def get_shop_name(self, obj):
         if obj.shop:
             return obj.shop.shopname
         return None
+    
+
+class ShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ('shop_owner', 'shopname', 'location', 'phone_no', 'email')
+    def create(self, validated_data):
+        shop = Shop.objects.create(
+            shop_owner=validated_data['shop_owner'],
+            shopname=validated_data['shopname'],
+            location=validated_data['location'],
+            phone_no=validated_data['phone_no'],
+            email=validated_data['email']
+        )
+        return shop
