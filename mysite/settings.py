@@ -107,6 +107,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'mysite.urls'
+REDISHOST = os.environ["REDISHOST"]
+REDISPORT = os.environ["REDISPORT"]
+REDISPASSWORD = os.environ["REDISPASSWORD"]
+REDISUSER = os.environ["REDISUSER"]
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
