@@ -117,22 +117,18 @@ class ProductsUpload(APIView):
         username = self.kwargs.get('username', None)
 
         # shop_name = request.session.get('shop_name')
-        shop_name = Shop.objects.filter(shop_owner=username).values_list('shopname', flat=True).first()
+        shop = Shop.objects.filter(shop_owner=username).first()
+
 
         for data in data_list:
-            data['shop_name'] = shop_name
-            print(data)
-            serializer = ProductSerializer(data=data)
-            print(serializer)
-            if serializer.is_valid():
-                shop = serializer.save()  # Create and save the product object
-                # Additional logic or response handling for each product
-            else:
-                errors = serializer.errors
-                # Handle validation errors for each product
-                print(errors)
+            data['shop'] = shop.id if shop else None  # Assign the Shop object's ID to the 'shop' field
 
-        return JsonResponse({'message': 'Products created successfully.'}, status=201)
+        serializer = ProductSerializer(data=data_list, many=True)
+        if serializer.is_valid():
+            serializer.save()  # Create and save the product objects
+            return Response({'message': 'Products created successfully.'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ProductsView(APIView):
     authentication_classes = []
