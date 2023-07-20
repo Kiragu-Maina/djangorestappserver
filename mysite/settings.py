@@ -107,13 +107,17 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'mysite.urls'
+REDISHOST = os.environ["REDISHOST"]
+REDISPORT = os.environ["REDISPORT"]
+REDISPASSWORD = os.environ["REDISPASSWORD"]
+REDISUSER = os.environ["REDISUSER"]
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}",
+        "LOCATION": f"redis://{REDISHOST}:{REDISPORT}",
         "OPTIONS": {
-            "PASSWORD": REDIS_PASSWORD,
-            "USERNAME": REDIS_USER,
+            "PASSWORD": REDISPASSWORD,
+            "USERNAME": REDISUSER,
             
         },
     }
