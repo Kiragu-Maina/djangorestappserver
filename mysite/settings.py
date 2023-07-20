@@ -110,10 +110,10 @@ ROOT_URLCONF = 'mysite.urls'
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}",
+        "LOCATION": f"redis://{REDISHOST}:{REDISPORT}",
         "OPTIONS": {
-            "PASSWORD": REDIS_PASSWORD,
-            "USERNAME": REDIS_USER,
+            "PASSWORD": REDISPASSWORD,
+            "USERNAME": REDISUSER,
             
         },
     }
