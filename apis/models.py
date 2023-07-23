@@ -43,7 +43,7 @@ class Shop(models.Model):
 
 class Product(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
-    image = models.ImageField(upload_to=upload_location, null=True, blank=True)
+    image = models.CharField(max_length=500, default='null')
     title = models.CharField(max_length=100)
     subtitle = models.CharField(max_length=100)
     description = models.TextField()
@@ -64,5 +64,16 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
+    @classmethod
+    def create_product_with_shop(cls, shop_id, **kwargs):
+        try:
+            shop = Shop.objects.get(pk=shop_id)
+        except Shop.DoesNotExist:
+            raise ValueError(f"Shop with ID {shop_id} does not exist.")
+
+        product = cls(shop=shop, **kwargs)
+        product.save()
+        return product
 
     

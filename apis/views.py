@@ -3,6 +3,7 @@ from django.db.models import Avg
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 
 from rates.utils import utility
 import json
@@ -48,7 +49,12 @@ class LoginView(APIView):
         if user is not None:
             login(request, user)
             request.session['logged_in_user'] = username
-            return Response({'message': 'Logged in successfully.'})
+            token, _ = Token.objects.get_or_create(user=user)
+
+            # Include the token in the response data
+            return Response({'token': token.key, 'message': 'Logged in successfully.'})
+        
+            
         return Response({'message': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -81,6 +87,31 @@ class ComponentsView(APIView):
     def get(self, request, *args, **kwargs):
         components = ['Concrete', 'Bricks', 'Steel']
         return Response(components)
+class CategoriesView(APIView):
+    authentication_classes = []
+    permission_classes = []
+    
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        categories = [
+                'Hand Tools',
+                'Power Tools',
+                'Fasteners',
+                'Building Materials',
+                'Paint and Finishing Supplies',
+                'Plumbing Supplies',
+                'Electrical Supplies',
+                'Safety and Protective Gear',
+                'Hardware Accessories',
+                'Gardening and Outdoor Supplies'
+            ]
+
+        
+        return Response(categories)
+
 
 
 class RatesView(APIView):
@@ -113,21 +144,27 @@ class ProductsUpload(APIView):
 
     def post(self, request, *args, **kwargs):
 
-        data_list = request.data  # Assuming request.data is a list of dictionaries
+        data_list = request.data
+        print(data_list)  # Assuming request.data is a list of dictionaries
         username = self.kwargs.get('username', None)
 
         # shop_name = request.session.get('shop_name')
         shop = Shop.objects.filter(shop_owner=username).first()
 
-
+  # Assign the Shop object's ID to the 'shop' field
+        context = {'shop_id': shop.id}  # Provide the shop_id in the context
         for data in data_list:
-            data['shop'] = shop.id if shop else None  # Assign the Shop object's ID to the 'shop' field
+            serializer = ProductSerializer(data=data, context=context)
 
-        serializer = ProductSerializer(data=data_list, many=True)
-        if serializer.is_valid():
-            serializer.save()  # Create and save the product objects
-            return Response({'message': 'Products created successfully.'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            print(serializer)
+            if serializer.is_valid():
+                serializer.save()  # Create and save the product objects
+                
+            else:
+                print(serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message': 'Products created successfully.'}, status=status.HTTP_201_CREATED)
 
 
 class ProductsView(APIView):
@@ -141,30 +178,25 @@ class ProductsView(APIView):
     def get_queryset(self, request):
         print(request)
         username = self.kwargs.get('username', None)
+        if username != 'none':
 
-        # shop_name = request.session.get('shop_name')
-        shop_name = Shop.objects.filter(shop_owner=username).values_list('shopname', flat=True).first()
-        request.session['shop_name'] = shop_name
-        print('shopname in productsview is: ', shop_name)
+       
+            shop_name = Shop.objects.filter(shop_owner=username).values_list('shopname', flat=True).first()
+            request.session['shop_name'] = shop_name
+            print('shopname in productsview is: ', shop_name)
 
-        if shop_name is not None:
-            # Do something with the shop_name
-            print(f"The shop name in session is: {shop_name}")
-            queryset = Product.objects.filter(shop__shopname=shop_name)
-            print(queryset)
+            if shop_name is not None:
+                # Do something with the shop_name
+                print(f"The shop name in session is: {shop_name}")
+                queryset = Product.objects.filter(shop__shopname=shop_name)
+                print(queryset)
+            else:
+                # Handle the case when the shop_name is not found in the session
+                queryset = Product.objects.all()
         else:
-            # Handle the case when the shop_name is not found in the session
             queryset = Product.objects.all()
 
-        # if username:
-        #     # Get the shop names for the shop owner
-        #     shop_names = Shop.objects.filter(shop_owner=username).values_list('shopname', flat=True)
-        #     print(shop_names)
-        #     # Filter the products where the shop's shopname is in the shop_names list
-        #     queryset = Product.objects.filter(shop__shopname__in=shop_names)
-        #     print(queryset)
-        # else:
-        #     queryset = Product.objects.all()
+     
         return queryset
 
     def get(self, request, *args, **kwargs):

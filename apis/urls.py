@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from .views import ShopInventoryView, ComponentsView, RatesView, RegisterView, LoginView, ProductsView, ProductsUpload, ProductListView, CheckShop, CreateShop
+from .views import ShopInventoryView, ComponentsView, RatesView, RegisterView, LoginView, ProductsView, ProductsUpload, ProductListView, CheckShop, CreateShop, CategoriesView
 
 
 urlpatterns = [
@@ -27,5 +27,6 @@ urlpatterns = [
     path('products/<str:username>/', ProductsUpload.as_view(), name='uploadproducts'),
     path('ecommerce/<str:username>/', ProductsView.as_view(), name='ecommerce'),
     path('checkshop/<str:username>/', CheckShop.as_view(), name='checkshop'),
-    path('createshop/', CreateShop.as_view(), name='createshop')
-]
+    path('createshop/', CreateShop.as_view(), name='createshop'),   
+    path('categories/', CategoriesView.as_view(), name='categories')
+]   

@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'rates',
     'apis',
     'rest_framework',
+    'rest_framework.authtoken',
     "corsheaders",
      "cloudinary_storage",
     "cloudinary", 
@@ -122,6 +123,13 @@ CACHES = {
         },
     }
 }
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         },
+#         }
+
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = "default"
@@ -147,6 +155,7 @@ TEMPLATES = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',

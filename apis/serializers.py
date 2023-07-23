@@ -32,6 +32,16 @@ class ProductSerializer(serializers.ModelSerializer):
             return obj.shop.shopname
         return None
     
+    def create(self, validated_data):
+        shop_id = self.context.get('shop_id')  # Get the shop_id from the context
+
+        try:
+            shop = Shop.objects.get(pk=shop_id)
+        except Shop.DoesNotExist:
+            raise serializers.ValidationError(f"Shop with ID {shop_id} does not exist.")
+
+        validated_data['shop'] = shop  # Set the shop foreign key in the validated data
+        return super(ProductSerializer, self).create(validated_data)
 
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
