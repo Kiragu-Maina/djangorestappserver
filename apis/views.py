@@ -247,7 +247,7 @@ class CheckShop(APIView):
                 except Exception as e:
                     print(f"Error occurred during database query: {e}")
                 
-            return JsonResponse({'exists': exists}, status=200)
+            return JsonResponse({'exists': exists, 'shopname':shop_name}, status=200)   
         except:
             return JsonResponse({'exists': False}, status=400)  
 
