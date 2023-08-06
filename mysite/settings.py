@@ -48,7 +48,8 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = ["https://djangorestappserver-production.up.railway.app"]
 
 
-# CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = False
+EVENTSTREAM_ALLOW_ORIGIN = "https://www.pososta.com"
 # FORM SUBMISSION
 # Comment out the following line and place your railway URL, and your production URL in the array.
 # CSRF_TRUSTED_ORIGINS = ["*"]
@@ -71,6 +72,8 @@ INSTALLED_APPS = [
     "corsheaders",
      "cloudinary_storage",
     "cloudinary", 
+    'channels',
+    'django_eventstream',
 
     
     
@@ -94,6 +97,7 @@ CLOUDINARY_STORAGE = {
 
 
 MIDDLEWARE = [
+    'django_grip.GripMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
@@ -165,6 +169,7 @@ REST_FRAMEWORK = {
 
 
 
+ASGI_APPLICATION = 'mysite.asgi.application'
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
 

@@ -1,6 +1,6 @@
 from django.db.models import Avg
 from .models import Shop, Inventory
-
+from apis.models import Product
 
 def utilities(request):
     return concrete(request)
@@ -120,13 +120,10 @@ def steel(labour_costs, profit_overheads):
 
 
 def concret(selected_class, labour_costs, profit_overheads):
-
-    CementPrice = float(Inventory.objects.aggregate(Avg('cement_price'))[
-        'cement_price__avg'])
-    SandPrice = float(Inventory.objects.aggregate(
-        Avg('sand_price'))['sand_price__avg'])
-    AggregatePrice = float(Inventory.objects.aggregate(Avg('aggregate_price'))[
-        'aggregate_price__avg'])
+    
+    CementPrice = float(Product.objects.filter(title__iexact='cement').aggregate(Avg('price'))['price__avg'] or 0)
+    SandPrice = float(Product.objects.filter(title__iexact='sand').aggregate(Avg('price'))['price__avg'] or 0)
+    AggregatePrice = float(Product.objects.filter(title__iexact='aggregate').aggregate(Avg('price'))['price__avg'] or 0)
     print('cementprice:', CementPrice, ' sandprice:',
           SandPrice, ' aggregateprice:', AggregatePrice)
 

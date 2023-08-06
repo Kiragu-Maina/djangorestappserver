@@ -15,7 +15,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from .serializers import UserSerializer, ProductsSerializer, ProductSerializer, ShopSerializer
 from .models import Products, Product, Shop
-
+from django_eventstream import send_event
 
 class ProductListView(APIView):
     permission_classes = [AllowAny]
@@ -67,14 +67,19 @@ class ShopInventoryView(APIView):
         return super().dispatch(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
-        inventory_data = Inventory.objects.all().aggregate(
-            Avg('cement_price'), Avg('sand_price'), Avg('aggregate_price')
-        )
-        return Response({
+        inventory_data = {
+            'cement_price__avg': Product.objects.filter(title='cement').aggregate(Avg('price'))['price__avg'] or 0,
+            'sand_price__avg': Product.objects.filter(title='sand').aggregate(Avg('price'))['price__avg'] or 0,
+            'aggregate_price__avg': Product.objects.filter(title='aggregate').aggregate(Avg('price'))['price__avg'] or 0,
+        }
+
+        response_data = {
             'cement_price_avg': inventory_data['cement_price__avg'],
             'sand_price_avg': inventory_data['sand_price__avg'],
             'aggregate_price_avg': inventory_data['aggregate_price__avg'],
-        })
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 class ComponentsView(APIView):
     authentication_classes = []
@@ -159,12 +164,49 @@ class ProductsUpload(APIView):
             
             print(serializer)
             if serializer.is_valid():
-                serializer.save()  # Create and save the product objects
+                serializer.save()
+                send_event('test', 'message', {'text': 'hello world'})  # Create and save the product objects
                 
             else:
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({'message': 'Products created successfully.'}, status=status.HTTP_201_CREATED)
+    
+    def put(self, request, *args, **kwargs):
+        print('put called')
+        product_id = self.kwargs.get('product_id', None)  # Assuming you have a URL parameter for product_id
+        print(product_id)
+        username = self.kwargs.get('username', None)
+        print(username)
+        shop = Shop.objects.filter(shop_owner=username).first()
+
+        context = {'shop_id': shop.id}
+        try:
+            product = Product.objects.get(id=product_id, shop=shop)
+        except Product.DoesNotExist:
+            return Response({'message': 'Product not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ProductSerializer(product, data=request.data, context=context, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            send_event('test', 'message', {'text': 'hello world'})
+            return Response({'message': 'Product updated successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        product_id = self.kwargs.get('product_id', None)  # Assuming you have a URL parameter for product_id
+        username = self.kwargs.get('username', None)
+        shop = Shop.objects.filter(shop_owner=username).first()
+
+        try:
+            product = Product.objects.get(id=product_id, shop=shop)
+        except Product.DoesNotExist:
+            return Response({'message': 'Product not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        product.delete()
+        send_event('test', 'message', {'text': 'hello world'})
+        return Response({'message': 'Product deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
 class ProductsView(APIView):
@@ -259,4 +301,6 @@ class CheckShop(APIView):
        
         return super().dispatch(request, *args, **kwargs)
     
+
+
 
