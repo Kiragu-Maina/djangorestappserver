@@ -1,10 +1,13 @@
+
 gunicorn==20.1.0
-daphne
 psycopg2==2.8.6
+
+
+Werkzeug==2.3.6
 asgiref==3.7.2
 async-timeout==4.0.2
 attrs==23.1.0
-autobahn==23.6.2
+autobahn
 Automat==22.10.0
 certifi==2023.7.22
 cffi==1.15.1
@@ -49,3 +52,5 @@ urllib3==1.26.16
 Werkzeug==2.3.6
 whitenoise==6.5.0
 zope.interface==6.0
+
+
