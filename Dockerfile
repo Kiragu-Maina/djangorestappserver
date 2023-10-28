@@ -11,14 +11,6 @@ COPY . /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y postgresql gcc
 
-# Install default-jdk for Solr
-RUN apt-get update && apt-get install -y default-jdk
-
-# Download and install Solr
-RUN curl -O https://dlcdn.apache.org/solr/solr/9.2.0/solr-9.2.0.tgz && \
-    tar xzf solr-9.2.0.tgz solr-9.2.0/bin/install_solr_service.sh && \
-    bash ./solr-9.2.0/bin/install_solr_service.sh solr-9.2.0.tgz
-
 # Create virtual environment and activate it
 RUN python -m venv /opt/venv && . /opt/venv/bin/activate
 
